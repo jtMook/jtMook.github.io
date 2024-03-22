@@ -453,6 +453,66 @@ Run server1$ hexo ser
 
 
 
+  
+<script src="https://npm.webcache.cn/theme-shokax-pjax@0.0.3/dist/index.umd.js"></script>
+
+  <script>
+    new Pjax({
+      selectors: [
+        "#header-title",
+        "#subtitle-wrap",
+        "#content",
+        '#mobile-nav',
+      ],
+      switches: {
+        "#header-title": Pjax.switches.outerHTML,
+        "#subtitle-wrap": Pjax.switches.outerHTML,
+        "#content": function(oldEl, newEl, options) {
+          function loadScripts(scripts, index) {
+            if (index < scripts.length) {
+              var script = scripts[index];
+
+              if ($(script).attr('src')) {
+                $.ajax({
+                  url: $(script).attr('src'),
+                  dataType: 'script',
+                  success: () => {
+                    loadScripts(scripts, index + 1);
+                  },
+                  error: (xhr, status, error) => {
+                    console.error('Failed to load script:', $(script).attr('src'), error);
+                  }
+                });
+              } else {
+                eval($(script).text());
+                loadScripts(scripts, index + 1);
+              }
+            }
+          }
+
+          const scripts = $(newEl.outerHTML).find('script').toArray();
+          loadScripts(scripts, 0);
+          oldEl.outerHTML = newEl.outerHTML
+          this.onSwitch()
+        },
+        "#mobile-nav": Pjax.switches.outerHTML
+      },
+      cacheBust: false
+    })
+  </script>
+  
+<script src="/js/pjax.js"></script>
+
+
+
+
+  <script>
+    function initLive2d() {
+      live2d.init("https://fastly.jsdelivr.net/gh/MliKiowa/plugin-live2d/", {themeTipsPath: ""});
+    }
+  </script>
+  
+<script src="https://fastly.jsdelivr.net/gh/MliKiowa/plugin-live2d/js/live2d-autoload.js" onload="initLive2d &amp;&amp; initLive2d()" async></script>
 
 
 
